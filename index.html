@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Study Planner - AI Powered</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body class="light-mode">
+  <div class="app-container">
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <div class="logo">
+          <i class="ri-graduation-cap-fill"></i>
+          <span>Study<span class="text-primary">Plan</span></span>
+        </div>
+      </div>
+      
+      <nav class="sidebar-nav">
+        <button class="nav-item active" data-view="dashboard">
+          <i class="ri-dashboard-line"></i> Dashboard
+        </button>
+        <button class="nav-item" data-view="subjects">
+          <i class="ri-book-read-line"></i> Subjects
+        </button>
+        <button class="nav-item" data-view="tasks">
+          <i class="ri-checkbox-multiple-line"></i> Tasks
+        </button>
+        <button class="nav-item" data-view="exams">
+          <i class="ri-calendar-event-line"></i> Exams
+        </button>
+        <button class="nav-item" data-view="progress">
+          <i class="ri-bar-chart-box-line"></i> Progress
+        </button>
+      </nav>
+      
+      <div class="sidebar-footer">
+        <button id="theme-toggle" class="nav-item" title="Toggle Dark Mode">
+          <i class="ri-moon-line"></i> <span>Dark Mode</span>
+        </button>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="main-content">
+      <header class="topbar">
+        <h1 id="page-title">Dashboard</h1>
+        <div class="user-profile">
+          <div class="streak-badge">
+            <i class="ri-fire-fill"></i>
+            <span id="header-streak-count">0</span> Day Streak
+          </div>
+          <img src="https://ui-avatars.com/api/?name=Student&background=random" alt="User Profile" class="avatar">
+        </div>
+      </header>
+
+      <div class="view-container">
+        <!-- Dashboard View -->
+        <section id="view-dashboard" class="view active">
+          
+          <div class="stat-card" id="ai-suggestion-container" style="margin-bottom: 24px; background: linear-gradient(135deg, rgba(67, 24, 255, 0.1) 0%, rgba(134, 140, 255, 0.1) 100%); border-left: 4px solid var(--primary);">
+            <div style="display: flex; gap: 16px; align-items: flex-start;">
+              <div style="padding: 12px; background-color: var(--primary); color: white; border-radius: 12px; font-size: 1.5rem;">
+                <i class="ri-robot-2-fill"></i>
+              </div>
+              <div class="ai-content" style="flex: 1;">
+                <h3 style="color: var(--primary); margin-bottom: 4px;">Recommended Task to Study Next</h3>
+                <p id="ai-suggestion-text" style="color: var(--text-main); line-height: 1.5; font-weight: 500;"></p>
+              </div>
+            </div>
+          </div>
+
+          <div class="stat-card" id="motivation-container" style="margin-bottom: 24px; background: linear-gradient(135deg, rgba(1, 181, 116, 0.1) 0%, rgba(1, 181, 116, 0.05) 100%); border-left: 4px solid var(--success);">
+            <div style="display: flex; gap: 16px; align-items: center;">
+              <div style="padding: 12px; background-color: var(--success); color: white; border-radius: 12px; font-size: 1.5rem;">
+               <i class="ri-sparkling-fill"></i>
+              </div>
+              <div style="flex: 1;">
+                <h3 style="color: var(--success); margin-bottom: 4px;">Daily Motivation</h3>
+                <p id="motivation-text" style="color: var(--text-main); font-weight: 600; font-size: 1.1rem; line-height: 1.4;"></p>
+              </div>
+            </div>
+          </div>
+
+          <div class="dashboard-grid">
+            
+            <div class="stat-card" style="grid-column: span 2;">
+              <div class="stat-info">
+                <h3>Today's Progress Overview</h3>
+                <p id="progress-text" class="text-muted" style="margin-top: 4px;">0 / 0 Tasks Completed</p>
+              </div>
+              <div class="progress-container">
+                <div class="progress-bar">
+                  <div class="progress-fill" id="daily-progress" style="width: 0%"></div>
+                </div>
+                <span class="progress-percentage" id="progress-percentage">0%</span>
+              </div>
+              
+              <div class="daily-stats-row" style="display: flex; gap: 24px; margin-top: 24px; padding-top: 24px; border-top: 1px solid var(--border-color);">
+                <div class="mini-stat">
+                  <span class="text-muted" style="font-size: 0.9rem; font-weight: 600;">TOTAL</span>
+                  <div id="stat-total" style="font-size: 1.8rem; font-weight: 800; color: var(--text-main);">0</div>
+                </div>
+                <div class="mini-stat">
+                  <span class="text-muted" style="font-size: 0.9rem; font-weight: 600;">COMPLETED</span>
+                  <div id="stat-completed" style="font-size: 1.8rem; font-weight: 800; color: var(--success);">0</div>
+                </div>
+                <div class="mini-stat">
+                  <span class="text-muted" style="font-size: 0.9rem; font-weight: 600;">PENDING</span>
+                  <div id="stat-pending" style="font-size: 1.8rem; font-weight: 800; color: var(--warning);">0</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="stat-card timer-card">
+              <div class="timer-header">
+                <h3>Focus Timer</h3>
+                <i class="ri-timer-2-line"></i>
+              </div>
+              
+              <div class="circular-timer-container">
+                <svg class="timer-svg" viewBox="0 0 120 120">
+                  <circle class="timer-bg" cx="60" cy="60" r="54"></circle>
+                  <circle class="timer-progress" id="timer-ring" cx="60" cy="60" r="54"></circle>
+                </svg>
+                <div class="timer-display" id="timer-display">25:00</div>
+              </div>
+
+              <div class="timer-controls">
+                <button id="timer-start" class="btn btn-primary btn-sm"><i class="ri-play-fill"></i></button>
+                <button id="timer-pause" class="btn btn-outline btn-sm hidden"><i class="ri-pause-fill"></i></button>
+                <button id="timer-reset" class="btn btn-text btn-sm"><i class="ri-refresh-line"></i></button>
+              </div>
+            </div>
+
+            <div class="stat-card">
+              <div class="stat-info mb-3">
+                <h3>Study Streaks</h3>
+              </div>
+              <div style="display: flex; gap: 24px; margin-top: 24px; align-items: center; justify-content: center;">
+                <div style="display: flex; align-items: center; gap: 12px;">
+                  <i class="ri-fire-fill" style="font-size: 2.5rem; color: var(--warning); filter: drop-shadow(0 4px 8px rgba(255,181,71,0.3));"></i>
+                  <div>
+                    <div id="dash-current-streak" style="font-size: 2rem; font-weight: 800; line-height: 1;">0</div>
+                    <span class="text-muted" style="font-size: 0.8rem; font-weight: 700; letter-spacing: 0.5px;">CURRENT</span>
+                  </div>
+                </div>
+                <div style="width: 1px; height: 40px; background-color: var(--border-color);"></div>
+                <div style="display: flex; align-items: center; gap: 12px;">
+                  <i class="ri-medal-fill" style="font-size: 2.5rem; color: var(--primary); filter: drop-shadow(0 4px 8px rgba(67, 24, 255, 0.3));"></i>
+                  <div>
+                    <div id="dash-longest-streak" style="font-size: 2rem; font-weight: 800; line-height: 1;">0</div>
+                    <span class="text-muted" style="font-size: 0.8rem; font-weight: 700; letter-spacing: 0.5px;">LONGEST</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+          
+          <!-- New Chart Section -->
+          <div class="dashboard-section" style="margin-bottom: 40px;">
+            <div class="stat-card" style="padding: 32px;">
+              <div class="section-header" style="margin-bottom: 24px;">
+                <h2 style="font-size: 1.25rem;">Weekly Study Progress</h2>
+              </div>
+              <div style="position: relative; height: 300px; width: 100%;">
+                <canvas id="weekly-chart"></canvas>
+              </div>
+            </div>
+          </div>
+
+          <div class="dashboard-section" style="margin-bottom: 40px;">
+            <div class="section-header">
+              <h2>Upcoming Exams</h2>
+              <button class="btn btn-text" onclick="app.switchView('exams')">View All</button>
+            </div>
+            <div class="exam-grid" id="dashboard-exams">
+              <!-- Exams will be injected here -->
+            </div>
+          </div>
+
+          <div class="dashboard-section">
+            <div class="section-header">
+              <h2>Today's Tasks</h2>
+              <button class="btn btn-text" onclick="app.switchView('tasks')">View All</button>
+            </div>
+            <div class="task-list" id="dashboard-tasks">
+              <!-- Tasks will be injected here -->
+            </div>
+          </div>
+
+        </section>
+
+        <!-- Subjects View -->
+        <section id="view-subjects" class="view">
+          <div class="section-header">
+            <h2>Your Subjects</h2>
+            <button class="btn btn-primary" id="btn-add-subject"><i class="ri-add-line"></i> Add Subject</button>
+          </div>
+          
+          <div class="subject-grid" id="subjects-grid">
+            <!-- Subject Cards Injected -->
+          </div>
+        </section>
+
+        <!-- Tasks View -->
+        <section id="view-tasks" class="view">
+          <div class="section-header">
+            <h2>Study Tasks</h2>
+            <button class="btn btn-primary" id="btn-add-task"><i class="ri-add-line"></i> Add Task</button>
+          </div>
+          
+          <div class="task-controls" style="display: flex; flex-wrap: wrap; gap: 16px; margin-bottom: 24px; align-items: center; justify-content: space-between;">
+            <div class="task-filters" style="margin-bottom: 0;">
+              <button class="filter-btn active" data-filter="all">All</button>
+              <button class="filter-btn" data-filter="pending">Pending</button>
+              <button class="filter-btn" data-filter="completed">Completed</button>
+            </div>
+            
+            <div class="task-dropdowns" style="display: flex; gap: 16px;">
+              <select id="filter-subject" class="form-control" style="padding: 8px 16px; width: auto; font-size: 0.9rem;">
+                <option value="all">All Subjects</option>
+                <!-- Subjects injected dynamically -->
+              </select>
+              <select id="sort-tasks" class="form-control" style="padding: 8px 16px; width: auto; font-size: 0.9rem;">
+                <option value="deadline">Sort by Deadline</option>
+                <option value="priority">Sort by Priority</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="task-grid" id="all-tasks-list">
+            <!-- Tasks injected -->
+          </div>
+        </section>
+
+        <!-- Exams View -->
+        <section id="view-exams" class="view">
+          <div class="section-header">
+            <h2>Upcoming Exams</h2>
+            <button class="btn btn-primary" id="btn-add-exam"><i class="ri-add-line"></i> Add Exam</button>
+          </div>
+          
+          <div class="exam-grid" id="exams-grid">
+            <!-- Exam cards injected -->
+          </div>
+        </section>
+
+        <!-- Progress View -->
+        <section id="view-progress" class="view">
+          <div class="section-header">
+            <h2>Your Progress</h2>
+          </div>
+          
+          <div class="progress-dashboard">
+            <div class="stat-card streak-card-large">
+              <i class="ri-fire-fill streak-icon-large"></i>
+              <div class="streak-info">
+                <h2 id="progress-streak-count">0</h2>
+                <p>Day Study Streak</p>
+              </div>
+            </div>
+            
+            <div class="stat-card">
+              <div class="stat-info">
+                <h3>Total Tasks Completed</h3>
+                <h2 id="total-completed-tasks">0</h2>
+              </div>
+            </div>
+          </div>
+        </section>
+
+      </div>
+    </main>
+  </div>
+
+  <!-- Modals Container -->
+  <div id="modal-container" class="modal-overlay hidden">
+    <!-- Modals injected recursively -->
+  </div>
+
+  <script src="store.js"></script>
+  <script src="timer.js"></script>
+  <script src="components.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
